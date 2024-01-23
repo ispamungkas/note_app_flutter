@@ -14,6 +14,19 @@ class CustomStyle {
           textStyle: Theme.of(context).textTheme.titleMedium,
           fontWeight: FontWeight.w300);
 
+  static TextStyle Function(BuildContext context) titleMedium =
+      (BuildContext context) => GoogleFonts.poppins(
+          letterSpacing: 0,
+          textStyle: Theme.of(context).textTheme.titleMedium,
+          fontWeight: FontWeight.w300);
+
+  static TextStyle Function(BuildContext context) titleMediumGrey =
+      (BuildContext context) => GoogleFonts.poppins(
+          color: Colors.grey,
+          letterSpacing: -1,
+          fontWeight: FontWeight.w300,
+          textStyle: Theme.of(context).textTheme.titleMedium);
+
   static TextStyle Function(BuildContext context) titleMediumLightWhite =
       (BuildContext context) => GoogleFonts.poppins(
           letterSpacing: -1,
@@ -39,4 +52,16 @@ class CustomStyle {
       (BuildContext context) => GoogleFonts.poppins(
           textStyle: Theme.of(context).textTheme.bodySmall,
           fontWeight: FontWeight.w300);
+
+  static TextStyle Function(BuildContext context) bodySmallGrey =
+      (BuildContext context) => GoogleFonts.poppins(
+          color: Colors.grey,
+          textStyle: Theme.of(context).textTheme.bodySmall,
+          fontWeight: FontWeight.w300);
+  
+  static TextStyle Function(BuildContext context) appbarStyle = 
+      (BuildContext context) => GoogleFonts.poppins(
+                          textStyle: Theme.of(context).textTheme.headlineMedium,
+                          letterSpacing: -1,
+                          fontWeight: FontWeight.w600);
 }

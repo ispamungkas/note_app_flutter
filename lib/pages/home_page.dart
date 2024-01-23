@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:note_app/controller/color_controller.dart';
+import 'package:note_app/pages/about_page.dart';
+import 'package:note_app/pages/add_note_page.dart';
 import 'package:note_app/pages/widget/item_recent_widget.dart';
 import 'package:note_app/utils/custom_color.dart';
 import 'package:note_app/utils/custom_fontstyle.dart';
-import 'package:note_app/widget/item_note_recent.dart';
-import 'package:note_app/widget/item_note_widget.dart';
+import 'package:note_app/pages/widget/item_note_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +15,8 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
+enum _MenuPopUp { about, exit }
 
 class _HomePageState extends State<HomePage> {
   int choose = 1;
@@ -54,12 +56,23 @@ class _HomePageState extends State<HomePage> {
                           letterSpacing: -1,
                           fontWeight: FontWeight.w600),
                     ),
-                    GestureDetector(
-                      onTap: null,
-                      child: const Icon(
-                        Icons.menu,
-                        color: Colors.black,
-                      ),
+                    PopupMenuButton<_MenuPopUp>(
+                      itemBuilder: (context) => [
+                        menuPopUp(context, _MenuPopUp.about, "About"),
+                        menuPopUp(context, _MenuPopUp.exit, "Exit")
+                      ],
+                      onSelected: (value) {
+                        switch (value) {
+                          case _MenuPopUp.about:
+                            Navigator.push(context, MaterialPageRoute(builder: (e) => const AboutPage()));
+                            break;
+                          case _MenuPopUp.exit:
+                            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                            break;
+                          default:
+                            print("Not Selected");
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -72,62 +85,64 @@ class _HomePageState extends State<HomePage> {
       body: SizedBox(
         height: double.infinity,
         width: double.infinity,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "Recently added",
-                    style: CustomStyle.titleLarge(context),
-                  ),
-                  GestureDetector(
-                    child: Text(
-                      "See all",
-                      style: CustomStyle.titleMediumLight(context),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Recently added",
+                      style: CustomStyle.titleLarge(context),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            ItemRecentWidget(datas: nams),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 30, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "Categories",
-                    style: CustomStyle.titleLarge(context),
-                  ),
-                  GestureDetector(
-                    child: Text(
-                      "Browse",
-                      style: CustomStyle.titleMediumLight(context),
+                    GestureDetector(
+                      child: Text(
+                        "See all",
+                        style: CustomStyle.titleMediumLight(context),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            option(),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: MasonryGridView.count(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                itemBuilder: (context, index) => ItemNoteWidget(index: index),
+              ItemRecentWidget(datas: nams),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 30, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Categories",
+                      style: CustomStyle.titleLarge(context),
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        "Browse",
+                        style: CustomStyle.titleMediumLight(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              option(),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+                child: StaggeredGrid.count(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  children: nams.mapIndexed((e, i) => ItemNoteWidget(index: i)).toList(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Container(
@@ -136,12 +151,27 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             color: const Color(CustomColor.primary)),
-        child: const Center(
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (e) => const AddNotePage(title: "Add Notes",)));
+          },
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  menuPopUp(BuildContext context, _MenuPopUp value, String title) {
+    return PopupMenuItem(
+      value: value,
+      child: Text(
+        title,
+        style: CustomStyle.bodySmall(context),
       ),
     );
   }
@@ -177,7 +207,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget option() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         height: 40,
         width: double.infinity,
@@ -189,7 +219,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              flex: 1,
+              flex: 1,  
               child: GestureDetector(
                 onTap: () {
                   changeChoose(1);
@@ -267,5 +297,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+extension IndexedIterable<E> on Iterable<E> {
+  Iterable<T> mapIndexed<T>(T Function(E e, int i) f) {
+    var i = 0;
+    return map((e) => f(e, i++));
   }
 }
