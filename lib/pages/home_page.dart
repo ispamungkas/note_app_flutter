@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:note_app/controller/crud_note_controller.dart';
+import 'package:note_app/model/note_model.dart';
 import 'package:note_app/pages/about_page.dart';
 import 'package:note_app/pages/add_note_page.dart';
 import 'package:note_app/pages/widget/item_recent_widget.dart';
@@ -30,6 +32,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     List<String> nams = ['ucup', 'hasim', 'asyari', 'coaks'];
+    final crudController = CrudNoteController();
+    crudController.setList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -107,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              ItemRecentWidget(datas: nams),
+              ItemRecentWidget(datas: crudController.allBook.value),
               Padding(
                 padding: const EdgeInsets.only(
                     left: 20, right: 20, top: 30, bottom: 10),
@@ -145,16 +149,16 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        height: 50,
-        width: 50,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: const Color(CustomColor.primary)),
-        child: GestureDetector(
-          onTap: () {
+      floatingActionButton: GestureDetector(
+        onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (e) => const AddNotePage(title: "Add Notes",)));
-          },
+        },
+        child: Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: const Color(CustomColor.primary)),
           child: const Center(
             child: Icon(
               Icons.add,

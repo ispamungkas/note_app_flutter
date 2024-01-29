@@ -48,6 +48,13 @@ class CustomStyle {
           textStyle: Theme.of(context).textTheme.titleMedium,
           fontWeight: FontWeight.w500);
 
+  static TextStyle Function(BuildContext context) titleMediumBoldWhite =
+      (BuildContext context) => GoogleFonts.poppins(
+          letterSpacing: -1,
+          color: Colors.white,
+          textStyle: Theme.of(context).textTheme.titleMedium,
+          fontWeight: FontWeight.w500);
+
   static TextStyle Function(BuildContext context) bodySmall =
       (BuildContext context) => GoogleFonts.poppins(
           textStyle: Theme.of(context).textTheme.bodySmall,

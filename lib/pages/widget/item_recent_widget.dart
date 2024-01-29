@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/model/note_model.dart';
 import 'package:note_app/pages/widget/item_note_recent.dart';
 
 class ItemRecentWidget extends StatelessWidget {
   const ItemRecentWidget({super.key, required this.datas});
 
-  final List<String> datas;
+  final List<Map<String,dynamic>> datas;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class ItemRecentWidget extends StatelessWidget {
           child: Row(
             children: datas
                 .map(
-                  (e) => ItemNoteRecent(),
+                  (e) => ItemNoteRecent(dataNoteModel: NoteModel.second().fromJson(e)),
                 )
                 .toList(),
           ),

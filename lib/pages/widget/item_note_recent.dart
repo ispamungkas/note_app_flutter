@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/model/note_model.dart';
 import 'package:note_app/pages/detail_page.dart';
 import 'package:note_app/utils/custom_color.dart';
 import 'package:note_app/utils/custom_fontstyle.dart';
 
 class ItemNoteRecent extends StatelessWidget {
-  const ItemNoteRecent({super.key});
+  ItemNoteRecent({super.key, required this.dataNoteModel});
+  NoteModel dataNoteModel;
 
   @override
   Widget build(BuildContext context) {
+    DateTime date = dataNoteModel.tanggal!;
+
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const DetailPage())),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => DetailPage(dataModel: dataNoteModel))),
       child: Container(
         margin: const EdgeInsets.only(right: 10),
         child: Material(
@@ -24,18 +28,18 @@ class ItemNoteRecent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'tanggal',
+                    '${date.day} -> ${date.year}',
                     style: CustomStyle.bodySmall(context),
                   ),
                   Text(
-                    "Shopping List",
+                    "${dataNoteModel.judul}",
                     style: CustomStyle.titleMediumBold(context),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "ini adalah deskripsi dari orang yang keren skelai sdfsafadk ssafndskfndsakfnsjankjsanfkjnfkj",
+                    "${dataNoteModel.deskripsi}",
                     style: CustomStyle.bodySmall(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

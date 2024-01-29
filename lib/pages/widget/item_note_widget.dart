@@ -58,7 +58,7 @@ class ItemNoteWidget extends StatelessWidget {
     );
   }
 
-  Widget body(BuildContext context, int index) {;
+  Widget body(BuildContext context, int index) {
     return Text(
       "ini adalah bodsdfsdfsdd" * 10,
       style: CustomStyle.bodySmall(context),
