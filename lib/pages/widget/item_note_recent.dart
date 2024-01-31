@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/model/note_model.dart';
-import 'package:note_app/pages/detail_page.dart';
 import 'package:note_app/utils/custom_color.dart';
 import 'package:note_app/utils/custom_fontstyle.dart';
 
-class ItemNoteRecent extends StatelessWidget {
-  ItemNoteRecent({super.key, required this.dataNoteModel});
+// ignore: must_be_immutable
+class ItemNoteRecent extends StatefulWidget {
+  ItemNoteRecent({super.key, required this.dataNoteModel, required this.handleNavigate});
   NoteModel dataNoteModel;
+  Function (NoteModel value) handleNavigate;
 
   @override
+  State<ItemNoteRecent> createState() => _ItemNoteRecentState();
+}
+
+class _ItemNoteRecentState extends State<ItemNoteRecent> {
+  @override
   Widget build(BuildContext context) {
-    DateTime date = dataNoteModel.tanggal!;
+    DateTime date = widget.dataNoteModel.tanggal!;
 
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => DetailPage(dataModel: dataNoteModel))),
+      onTap: () {
+        widget.handleNavigate(widget.dataNoteModel);
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 10),
         child: Material(
@@ -32,14 +40,14 @@ class ItemNoteRecent extends StatelessWidget {
                     style: CustomStyle.bodySmall(context),
                   ),
                   Text(
-                    "${dataNoteModel.judul}",
+                    "${widget.dataNoteModel.judul}",
                     style: CustomStyle.titleMediumBold(context),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "${dataNoteModel.deskripsi}",
+                    "${widget.dataNoteModel.deskripsi}",
                     style: CustomStyle.bodySmall(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -52,4 +60,5 @@ class ItemNoteRecent extends StatelessWidget {
       ),
     );
   }
+
 }

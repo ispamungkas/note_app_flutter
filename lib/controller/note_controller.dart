@@ -15,4 +15,5 @@ class NoteController extends GetxController{
   changeOptionState(option){
     optionState(option);
   }
+
 }

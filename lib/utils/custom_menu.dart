@@ -5,7 +5,8 @@ import 'package:note_app/controller/note_controller.dart';
 import 'package:note_app/utils/custom_fontstyle.dart';
 
 class CustomDropdown extends StatefulWidget {
-  const CustomDropdown({super.key});
+  const CustomDropdown({super.key, this.isCanEdit});
+  final isCanEdit;
   @override
   State<CustomDropdown> createState() => _CustomDropdownState();
 }
@@ -15,6 +16,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
   final _link = LayerLink();
   final get = Get.put(NoteController());
 
+  // ignore: unused_field
   String? _title;
   double? _buttonwidth;
 
@@ -56,8 +58,12 @@ class _CustomDropdownState extends State<CustomDropdown> {
   }
 
   void onTap() {
-    _buttonwidth = context.size?.width;
-    _tooltipController.toggle();
+    if(widget.isCanEdit){
+      _buttonwidth = context.size?.width;
+      _tooltipController.toggle();
+    } else {
+      return;
+    }
   }
 }
 
@@ -91,6 +97,7 @@ class ButtonMenu extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class MenuContainer extends StatelessWidget {
   MenuContainer({super.key, this.width, required this.callback});
   final double? width;
@@ -101,6 +108,7 @@ class MenuContainer extends StatelessWidget {
 
   // Crud Note Controller instance
   final crud = Get.put(CrudNoteController());
+  
 
   @override
   Widget build(BuildContext context) {

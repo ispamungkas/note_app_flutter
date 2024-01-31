@@ -6,6 +6,9 @@ import 'package:note_app/controller/crud_note_controller.dart';
 import 'package:note_app/model/note_model.dart';
 import 'package:note_app/pages/about_page.dart';
 import 'package:note_app/pages/add_note_page.dart';
+import 'package:note_app/pages/detail_page.dart';
+import 'package:note_app/pages/list_of_note.dart';
+import 'package:note_app/pages/search_page.dart';
 import 'package:note_app/pages/widget/item_recent_widget.dart';
 import 'package:note_app/utils/custom_color.dart';
 import 'package:note_app/utils/custom_fontstyle.dart';
@@ -31,9 +34,22 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> nams = ['ucup', 'hasim', 'asyari', 'coaks'];
     final crudController = CrudNoteController();
     crudController.setList();
+
+    // data filtered by category
+    Iterable<dynamic> datasCategory =
+        crudController.getItemWithCategory(choose);
+
+    void nav(NoteModel value) async {
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DetailPage(
+                    dataModel: value,
+                  )));
+      setState(() {});
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -68,10 +84,14 @@ class _HomePageState extends State<HomePage> {
                       onSelected: (value) {
                         switch (value) {
                           case _MenuPopUp.about:
-                            Navigator.push(context, MaterialPageRoute(builder: (e) => const AboutPage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (e) => const AboutPage()));
                             break;
                           case _MenuPopUp.exit:
-                            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                            SystemChannels.platform
+                                .invokeMethod('SystemNavigator.pop');
                             break;
                           default:
                             print("Not Selected");
@@ -93,7 +113,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -103,6 +124,10 @@ class _HomePageState extends State<HomePage> {
                       style: CustomStyle.titleLarge(context),
                     ),
                     GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ListOfNotePage())),
                       child: Text(
                         "See all",
                         style: CustomStyle.titleMediumLight(context),
@@ -111,7 +136,14 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              ItemRecentWidget(datas: crudController.allBook.value),
+              // ignore: invalid_use_of_protected_member
+              ItemRecentWidget(
+                // ignore: invalid_use_of_protected_member
+                datas: crudController.allBook.value,
+                handleNavigate: (v) {
+                  nav(v);
+                },
+              ),
               Padding(
                 padding: const EdgeInsets.only(
                     left: 20, right: 20, top: 30, bottom: 10),
@@ -137,13 +169,20 @@ class _HomePageState extends State<HomePage> {
                 height: 10,
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
-                child: StaggeredGrid.count(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 20),
+                child: (datasCategory.isNotEmpty) ? StaggeredGrid.count(
                   crossAxisCount: 4,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  children: nams.mapIndexed((e, i) => ItemNoteWidget(index: i)).toList(),
-                ),
+                  children: datasCategory
+                      .mapIndexed((e, i) => ItemNoteWidget(
+                            index: i,
+                            noteModel: NoteModel.second().fromJson(e),
+                            callback: (value) => nav(value),
+                          ))
+                      .toList(),
+                ) : SizedBox(height: 225,child: Center(child: Text("Empty Note", style: CustomStyle.titleMedium(context),),)),
               ),
             ],
           ),
@@ -151,7 +190,12 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: GestureDetector(
         onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (e) => const AddNotePage(title: "Add Notes",)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (e) => const AddNotePage(
+                        title: "Add Notes",
+                      )));
         },
         child: Container(
           height: 50,
@@ -181,27 +225,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget searchBox() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 25),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(25)),
-        child: TextFormField(
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: BorderSide.none),
-            hintText: "Search notes ..",
-            prefixIcon: const Icon(
-              Icons.search_rounded,
-              color: Colors.grey,
-              size: 25,
-            ),
-            hintStyle: GoogleFonts.poppins(
-              textStyle: Theme.of(context).textTheme.titleMedium,
-              color: Colors.grey,
-              letterSpacing: -1,
+    return GestureDetector(
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const SearchPage())),
+      child: Hero(
+        tag: "c",
+        child: Material(
+          type: MaterialType.transparency,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 25),
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  const Icon(
+                    Icons.search_rounded,
+                    color: Colors.grey,
+                    size: 25,
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    "Search",
+                    style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.titleMedium,
+                        color: Colors.grey,
+                        letterSpacing: -1),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -223,15 +282,14 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              flex: 1,  
+              flex: 1,
               child: GestureDetector(
                 onTap: () {
                   changeChoose(1);
                   print(1);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
-                  curve: Curves.easeInSine,
+                  duration: const Duration(milliseconds: 100),
                   decoration: BoxDecoration(
                       color: Color((choose == 1)
                           ? CustomColor.primary
@@ -239,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text(
-                      "Quick Notes",
+                      "Journal",
                       style: CustomStyle.titleMediumLightWhiteFunc(
                           context, (choose == 1) ? Colors.white : Colors.black),
                     ),
@@ -255,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                   print(2);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
+                  duration: const Duration(milliseconds: 100),
                   curve: Curves.easeInSine,
                   decoration: BoxDecoration(
                       color: Color((choose == 2)
@@ -264,7 +322,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text(
-                      "To-do List",
+                      "Quick Notes",
                       style: CustomStyle.titleMediumLightWhiteFunc(
                           context, (choose == 2) ? Colors.white : Colors.black),
                     ),
@@ -280,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                   print(3);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
+                  duration: const Duration(milliseconds: 100),
                   curve: Curves.easeInSine,
                   decoration: BoxDecoration(
                       color: Color((choose == 3)
@@ -289,7 +347,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text(
-                      "Journal",
+                      "To-do List",
                       style: CustomStyle.titleMediumLightWhiteFunc(
                           context, (choose == 3) ? Colors.white : Colors.black),
                     ),
